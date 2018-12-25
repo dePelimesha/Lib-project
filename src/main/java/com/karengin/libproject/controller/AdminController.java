@@ -5,43 +5,35 @@ import com.karengin.libproject.dto.BookDto;
 import com.karengin.libproject.service.AuthorService;
 import com.karengin.libproject.service.BookService;
 import com.karengin.libproject.service.CommentsService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 @RestController
+@AllArgsConstructor
 @RequestMapping("/admin")
 public class AdminController {
     private final BookService bookService;
     private final AuthorService authorService;
     private final CommentsService commentsService;
 
-    @Autowired
-    public AdminController(final BookService bookService, final AuthorService authorService,
-                           final CommentsService commentsService) {
-        this.bookService = bookService;
-        this.authorService = authorService;
-        this.commentsService = commentsService;
+    @PostMapping("/create_author")
+    public ResponseEntity<String> createAuthor(@RequestBody final AuthorDto authorDto) {
+        return authorService.addAuthor(authorDto);
     }
 
     @PostMapping("/create_book")
-    public String createBook(@RequestBody final BookDto bookDto) {
-        bookService.createBook(bookDto);
-        return "Success";
+    public ResponseEntity<String> createBook(@RequestBody final BookDto bookDto) {
+        return bookService.createBook(bookDto);
     }
 
-    @PostMapping("/delete_comment/{id}")
-    public String deleteComment(@PathVariable("id") long id) {
-        commentsService.deleteById(id);
-        return "Success";
-    }
-
-    @PostMapping("/create_author")
-    public String createAuthor(@RequestBody final AuthorDto authorDto) {
-        if(authorService.getAuthor(authorDto.getName()) == null) {
-            authorService.addAuthor(authorDto);
-            return "Success";
-        }
-
-        return "Author already exists";
+    @DeleteMapping("/delete_comment/{id}")
+    public ResponseEntity<String> deleteComment(@PathVariable("id") final long id) {
+        return commentsService.deleteById(id);
     }
 }

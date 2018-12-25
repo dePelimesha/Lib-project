@@ -1,32 +1,32 @@
 package com.karengin.libproject.converter;
 
-import com.karengin.libproject.dao.BookRepository;
-import com.karengin.libproject.dao.UsersRepository;
-import com.karengin.libproject.dbo.CommentsDbo;
-import com.karengin.libproject.dbo.UsersDbo;
+import com.karengin.libproject.Entity.CommentsEntity;
 import com.karengin.libproject.dto.CommentsDto;
+import com.karengin.libproject.repository.UsersRepository;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-
 @Service
-public class CommentsConverter implements DtoDboConverter<CommentsDto, CommentsDbo> {
+@AllArgsConstructor
+public class CommentsConverter implements DtoEntityConverter<CommentsDto, CommentsEntity> {
+
+    private final UsersRepository usersRepository;
 
     @Override
-    public CommentsDto convertToDto(CommentsDbo dbo) {
+    public CommentsDto convertToDto(final CommentsEntity commentEntity) {
         final CommentsDto commentsDto = new CommentsDto();
-        commentsDto.setId(dbo.getId());
-        commentsDto.setComment(dbo.getComment());
-        commentsDto.setUserName(dbo.getUser().getLogin());
+        commentsDto.setId(commentEntity.getId());
+        commentsDto.setComment(commentEntity.getComment());
+        commentsDto.setUserName(commentEntity.getUser().getLogin());
         return commentsDto;
     }
 
     @Override
-    public CommentsDbo convertToDbo(CommentsDto dto) {
-        final CommentsDbo commentsDbo = new CommentsDbo();
-        BeanUtils.copyProperties(dto,commentsDbo);
-        return commentsDbo;
+    public CommentsEntity convertToEntity(final CommentsDto dto) {
+        final CommentsEntity commentEntity = new CommentsEntity();
+        BeanUtils.copyProperties(dto, commentEntity);
+        commentEntity.setUser(usersRepository.findByLogin(dto.getUserName()));
+        return commentEntity;
     }
 }

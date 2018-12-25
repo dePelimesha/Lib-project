@@ -1,24 +1,24 @@
 package com.karengin.libproject.converter;
 
-import com.karengin.libproject.dbo.UsersDbo;
+import com.karengin.libproject.Entity.UsersEntity;
 import com.karengin.libproject.dto.UsersDto;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 @Service
-public class UserConverter implements DtoDboConverter<UsersDto, UsersDbo>{
+public class UserConverter implements DtoEntityConverter<UsersDto, UsersEntity> {
 
     @Override
-    public UsersDto convertToDto(UsersDbo dbo) {
+    public UsersDto convertToDto(final UsersEntity userEntity) {
         final UsersDto userDto = new UsersDto();
-        BeanUtils.copyProperties(dbo,userDto);
+        BeanUtils.copyProperties(userEntity,userDto);
         return userDto;
     }
 
     @Override
-    public UsersDbo convertToDbo(UsersDto dto) {
-        final UsersDbo userDbo = new UsersDbo();
-        BeanUtils.copyProperties(dto,userDbo);
-        return userDbo;
+    public UsersEntity convertToEntity(final UsersDto dto) {
+        final UsersEntity userEntity = new UsersEntity();
+        BeanUtils.copyProperties(dto,userEntity);
+        return userEntity;
     }
 }

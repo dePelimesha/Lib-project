@@ -1,34 +1,34 @@
 package com.karengin.libproject.service;
 
+import com.karengin.libproject.Entity.UsersEntity;
 import com.karengin.libproject.converter.UserConverter;
-import com.karengin.libproject.dao.UsersRepository;
-import com.karengin.libproject.dao.UsersRoleRepository;
-import com.karengin.libproject.dbo.UsersDbo;
+import com.karengin.libproject.repository.UsersRepository;
+import com.karengin.libproject.repository.UsersRoleRepository;
 import com.karengin.libproject.dto.UsersDto;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 @Service
+@AllArgsConstructor
 public class UserService {
+
     private final UsersRepository usersRepository;
     private final UserConverter userConverter;
     private final UsersRoleRepository usersRoleRepository;
+    private PasswordEncoder passwordEncoder;
 
-    @Autowired
-    public UserService(final UsersRepository usersRepository, final UserConverter userConverter,
-                       final UsersRoleRepository usersRoleRepository) {
-        this.usersRepository = usersRepository;
-        this.userConverter = userConverter;
-        this.usersRoleRepository = usersRoleRepository;
-    }
+    public ResponseEntity<String> register(final UsersDto usersDto) {
+        if (usersRepository.findByLogin(usersDto.getLogin()) != null) {
+            return ResponseEntity.status(403).body("Login already exists");
+        }
 
-    public void register(final UsersDto usersDto) {
-        UsersDbo user = userConverter.convertToDbo(usersDto);
-        user.setUserRole(usersRoleRepository.findById(2));
+        UsersEntity user = userConverter.convertToEntity(usersDto);
+        String hashPassword = passwordEncoder.encode(user.getPassword());
+        user.setPassword(hashPassword);
+        user.setUser_role(usersRoleRepository.findById(2));
         usersRepository.save(user);
-    }
-
-    public UsersDto findByLogin(String login) {
-        return userConverter.convertToDto(usersRepository.findByLogin(login));
+        return ResponseEntity.status(201).body("Account was created");
     }
 }

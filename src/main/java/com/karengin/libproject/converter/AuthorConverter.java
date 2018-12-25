@@ -1,24 +1,25 @@
 package com.karengin.libproject.converter;
 
-import com.karengin.libproject.dbo.AuthorDbo;
+import com.karengin.libproject.Entity.AuthorEntity;
 import com.karengin.libproject.dto.AuthorDto;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AuthorConverter implements DtoDboConverter<AuthorDto, AuthorDbo> {
+public class AuthorConverter implements DtoEntityConverter<AuthorDto, AuthorEntity> {
 
     @Override
-    public AuthorDto convertToDto(AuthorDbo dbo) {
+    public AuthorDto convertToDto(final AuthorEntity authorEntity) {
         final AuthorDto authorDto = new AuthorDto();
-        BeanUtils.copyProperties(dbo,authorDto);
+        authorDto.setId(authorEntity.getId());
+        authorDto.setName(authorEntity.getName());
         return authorDto;
     }
 
     @Override
-    public AuthorDbo convertToDbo(AuthorDto dto) {
-        final AuthorDbo authorDbo = new AuthorDbo();
-        BeanUtils.copyProperties(dto,authorDbo);
-        return authorDbo;
+    public AuthorEntity convertToEntity(final AuthorDto dto) {
+        final AuthorEntity authorEntity = new AuthorEntity();
+        authorEntity.setName(dto.getName());
+        return authorEntity;
     }
 }
