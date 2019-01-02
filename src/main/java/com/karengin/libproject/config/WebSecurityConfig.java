@@ -20,9 +20,8 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 @AllArgsConstructor
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
 
-    private UserDetailsServiceImpl userDetailsService;
-    private AuthenticationEntryPoint authEntryPoint;
-
+    private final UserDetailsServiceImpl userDetailsService;
+    private final AuthenticationEntryPoint authEntryPoint;
 
     @Autowired
     public void configureGlobalSecurity(AuthenticationManagerBuilder auth) throws Exception {
@@ -38,7 +37,6 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .access("hasRole('ROLE_ADMIN')");
         http.authorizeRequests().antMatchers("/books/list/{book_id}/add_comment")
                 .access("hasAnyRole('ROLE_ADMIN','ROLE_USER')");
-        http.authorizeRequests().and().exceptionHandling().accessDeniedPage("/403");
         http.authorizeRequests().and().httpBasic()
                 .authenticationEntryPoint(authEntryPoint)
                 .and().sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

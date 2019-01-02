@@ -29,4 +29,10 @@ public class BookEntity {
     @OneToMany(mappedBy = "book")
     @JsonIgnore
     private List<CommentsEntity> comments;
+
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "book_genre",
+            joinColumns = @JoinColumn(name = "book_id"),
+            inverseJoinColumns = @JoinColumn(name = "genre_id"))
+    private List<GenreEntity> genresList;
 }

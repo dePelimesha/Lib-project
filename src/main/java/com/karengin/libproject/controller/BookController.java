@@ -3,9 +3,11 @@ package com.karengin.libproject.controller;
 import com.karengin.libproject.dto.AuthorDto;
 import com.karengin.libproject.dto.BookDto;
 import com.karengin.libproject.dto.CommentsDto;
+import com.karengin.libproject.dto.GenreDto;
 import com.karengin.libproject.service.AuthorService;
 import com.karengin.libproject.service.BookService;
 import com.karengin.libproject.service.CommentsService;
+import com.karengin.libproject.service.GenreService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -27,15 +30,22 @@ public class BookController {
     private final BookService bookService;
     private final AuthorService authorService;
     private final CommentsService commentsService;
+    private final GenreService genreService;
 
     @GetMapping("/list")
-    public ResponseEntity<List<BookDto>> getAllBook() {
-        return bookService.getBooksList();
+    public ResponseEntity<List<BookDto>> getAllBook(final HttpServletRequest request) {
+        final String[] genres = request.getParameterValues("genre");
+        return bookService.getBooksList(genres);
     }
 
     @GetMapping("/list/{id}")
     public ResponseEntity<BookDto> getBook(@PathVariable("id") final long id) {
         return bookService.getBookById(id);
+    }
+
+    @GetMapping("/list/search/{search_value}")
+    public ResponseEntity<List<BookDto>> findByTitle(@PathVariable("search_value") final String title) {
+        return bookService.getBooksByTitle(title);
     }
 
     @GetMapping("/list/{book_id}/comments")
@@ -57,6 +67,11 @@ public class BookController {
     @GetMapping("/auth_list/{id}")
     public ResponseEntity<List<BookDto>> getBooksByAuthor(@PathVariable("id") final long id) {
         return bookService.getBooksListByAuthorId(id);
+    }
+
+    @GetMapping("/genres")
+    public ResponseEntity<List<GenreDto>> getGenres() {
+        return genreService.getGenresList();
     }
 
     private String getPrincipal(){
