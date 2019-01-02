@@ -38,6 +38,11 @@ public class BookController {
         return bookService.getBookById(id);
     }
 
+    @GetMapping("/list/{name}")
+    public ResponseEntity<BookDto> getBookByName(@PathVariable("name") final String name) {
+        return bookService.getBookByName(name);
+    }
+
     @GetMapping("/list/{book_id}/comments")
     public ResponseEntity<List<CommentsDto>> getComments(@PathVariable("book_id") final long id) {
         return bookService.getCommentsForBook(id);

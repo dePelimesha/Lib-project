@@ -21,11 +21,13 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
@@ -197,5 +199,65 @@ public class BookServiceTest {
             assertEquals(comment.getComment(), commentsEntity.getComment());
             assertEquals(comment.getUserName(), commentsEntity.getUser().getLogin());
         });
+    }
+
+    /*author Stanislav Patskevich */
+    @Test
+    public void deleteBook(){
+
+        final BookEntity book = new BookEntity();
+        final CommentsEntity comment1 = new CommentsEntity();
+        final CommentsEntity comment2 = new CommentsEntity();
+        final List<CommentsEntity> listComment = new ArrayList<>();
+
+        book.setId(1);
+        listComment.add(comment1);
+        listComment.add(comment2);
+        book.setComments(listComment);
+        Mockito.when(bookRepository.existsById(new Long(1))).thenReturn(true);
+        Mockito.when(bookRepository.findById(1)).thenReturn(book);
+
+
+        ResponseEntity<String> result = bookService.deleteBook(1);
+
+        assertNotNull(result.getBody());
+        assertEquals(result.getStatusCode(), HttpStatus.OK);
+        assertEquals(result.getBody(),"Была удалена книга с ID №1");
+        verify(commentsRepository, times(2)).delete(any(CommentsEntity.class));
+        verify(bookRepository, times(1)).delete(book);
+
+    }
+
+    @Test
+    public void changeBook(){
+
+        final BookEntity book = new BookEntity();
+        final AuthorEntity author = new AuthorEntity();
+        final BookDto bookDto = new BookDto();
+
+        author.setId(1);
+        author.setName("name");
+        book.setId(1);
+        book.setTitle("title");
+        book.setDescription("description");
+        bookDto.setId(1);
+        bookDto.setTitle("new title");
+        bookDto.setDescription("new description");
+        bookDto.setAuthor("name");
+
+        Mockito.when(bookRepository.existsById(new Long(1))).thenReturn(true);
+        Mockito.when(bookRepository.findById(1)).thenReturn(book);
+        Mockito.when(authorRepository.existsByName(bookDto.getAuthor())).thenReturn(true);
+        Mockito.when(authorRepository.findByName(bookDto.getAuthor())).thenReturn(author);
+
+        ResponseEntity<String> result = bookService.changeBook(1, bookDto);
+
+        assertNotNull(result.getBody());
+        assertEquals(result.getStatusCode(), HttpStatus.OK);
+        assertEquals(result.getBody(),"Книга с ID №1 была изменена!");
+        assertEquals(book.getTitle(), bookDto.getTitle());
+        assertEquals(book.getDescription(), bookDto.getDescription());
+        assertEquals(book.getAuthor(), author);
+        verify(bookRepository, times(1)).save(book);
     }
 }
