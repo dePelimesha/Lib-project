@@ -3,6 +3,7 @@ package com.karengin.libproject.controller;
 import com.karengin.libproject.dto.AuthorDto;
 import com.karengin.libproject.dto.BookDto;
 import com.karengin.libproject.dto.CommentsDto;
+import com.karengin.libproject.dto.GenreDto;
 import com.karengin.libproject.service.AuthorService;
 import com.karengin.libproject.service.BookService;
 import com.karengin.libproject.service.CommentsService;
@@ -27,6 +28,7 @@ public class BookController {
     private final BookService bookService;
     private final AuthorService authorService;
     private final CommentsService commentsService;
+    private final GenreService genreService;
 
     @GetMapping("/list")
     public ResponseEntity<List<BookDto>> getAllBook() {
@@ -57,6 +59,14 @@ public class BookController {
     @GetMapping("/auth_list/{id}")
     public ResponseEntity<List<BookDto>> getBooksByAuthor(@PathVariable("id") final long id) {
         return bookService.getBooksListByAuthorId(id);
+    }
+
+    @GetMapping("/genre_list")
+    public ResponseEntity<List<GenreDto>> getGenres() { return genreService.getGenresList(); }
+
+    @GetMapping("/genre_list/{id}")
+    public ResponseEntity<List<BookDto>> getBooksByGenre(@PathVariable("id") final long id) {
+        return bookService.getBooksListByGenreId(id);
     }
 
     private String getPrincipal(){

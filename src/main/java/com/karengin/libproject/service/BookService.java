@@ -70,4 +70,13 @@ public class BookService {
         }
         return ResponseEntity.status(400).body(null);
     }
+
+    public ResponseEntity<List<BookDto>> getBooksListByGenreId(final long id) {
+        if(genreRepository.findById(id) != null) {
+            return ResponseEntity.status(200).body(
+                    bookRepository.findAllByGenre_Id(id).stream().map(bookConverter::convertToDto)
+                            .collect(Collectors.toList()));
+        }
+        return ResponseEntity.status(400).body(null);
+    }
 }
