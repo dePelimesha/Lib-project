@@ -7,6 +7,7 @@ import com.karengin.libproject.dto.GenreDto;
 import com.karengin.libproject.service.AuthorService;
 import com.karengin.libproject.service.BookService;
 import com.karengin.libproject.service.CommentsService;
+import com.karengin.libproject.service.GenreService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;

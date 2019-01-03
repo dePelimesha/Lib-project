@@ -11,6 +11,7 @@ import com.karengin.libproject.dto.CommentsDto;
 import com.karengin.libproject.repository.AuthorRepository;
 import com.karengin.libproject.repository.BookRepository;
 import com.karengin.libproject.repository.CommentsRepository;
+import com.karengin.libproject.repository.GenreRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -50,11 +51,14 @@ public class BookServiceTest {
     @Mock
     AuthorRepository authorRepository;
 
+    @Mock
+    GenreRepository genreRepository;
+
 
     @Before
     public void setUp() {
         bookService = new BookService(bookRepository, bookConverter,
-                commentsRepository, commentsConverter, authorRepository);
+                commentsRepository, commentsConverter, authorRepository, genreRepository);
     }
 
     @Test
