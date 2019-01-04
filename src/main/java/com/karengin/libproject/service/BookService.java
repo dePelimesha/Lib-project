@@ -63,14 +63,6 @@ public class BookService {
         return ResponseEntity.status(400).body(null);
     }
 
-    public ResponseEntity<BookDto> getBookByName(final String name) {
-        if(bookRepository.findByTitle(name) != null) {
-            return ResponseEntity.status(200).body(
-                    bookConverter.convertToDto(bookRepository.findByTitle(name)));
-        }
-        return ResponseEntity.status(400).body(null);
-    }
-
     public ResponseEntity<List<CommentsDto>> getCommentsForBook(final long id) {
         if(bookRepository.findById(id) != null) {
             return ResponseEntity.status(200).body(
@@ -90,7 +82,7 @@ public class BookService {
             }
             bookRepository.delete(book);
             return ResponseEntity.status(200).body("Была удалена книга с ID №"+id);
-        } else return ResponseEntity.status(404).body("Книга с ID №"+id+" не была найдена!");
+        } else return ResponseEntity.status(400).body("Книга с ID №"+id+" не была найдена!");
     }
 
     public ResponseEntity<String> changeBook(final long id, final BookDto bookDto) {
@@ -100,9 +92,22 @@ public class BookService {
             book.setDescription(bookDto.getDescription());
             if (authorRepository.existsByName(bookDto.getAuthor())){
                 book.setAuthor(authorRepository.findByName(bookDto.getAuthor()));
-            } else book.setAuthor(authorRepository.findById(1));
+            } else {
+                AuthorEntity authorEntity = new AuthorEntity();
+                authorEntity.setName(bookDto.getAuthor());
+                authorRepository.save(authorEntity);
+                book.setAuthor(authorEntity);
+            }
             bookRepository.save(book);
             return ResponseEntity.status(200).body("Книга с ID №"+id+" была изменена!");
-        } else return ResponseEntity.status(404).body("Книга с ID №"+id+" не была найдена!");
+        } else return ResponseEntity.status(400).body("Книга с ID №"+id+" не была найдена!");
+    }
+
+    public ResponseEntity<BookDto> getBookByName(final String name) {
+        if(bookRepository.existByTitle(name)) {
+            return ResponseEntity.status(200).body(
+                    bookConverter.convertToDto(bookRepository.findByTitle(name)));
+        }
+        return ResponseEntity.status(400).body(null);
     }
 }
