@@ -250,7 +250,7 @@ public class BookServiceTest {
         Mockito.when(authorRepository.existsByName(bookDto.getAuthor())).thenReturn(true);
         Mockito.when(authorRepository.findByName(bookDto.getAuthor())).thenReturn(author);
 
-        ResponseEntity<String> result = bookService.changeBook(1, bookDto);
+        final ResponseEntity<String> result = bookService.changeBook(1, bookDto);
 
         assertNotNull(result.getBody());
         assertEquals(result.getStatusCode(), HttpStatus.OK);
@@ -259,5 +259,25 @@ public class BookServiceTest {
         assertEquals(book.getDescription(), bookDto.getDescription());
         assertEquals(book.getAuthor(), author);
         verify(bookRepository, times(1)).save(book);
+
+
+        Mockito.when(authorRepository.existsByName(bookDto.getAuthor())).thenReturn(false);
+
+        final ResponseEntity<String> newResult = bookService.changeBook(1, bookDto);
+        verify( authorRepository, times(1)).save(any(AuthorEntity.class));
+    }
+
+    @Test
+    public void getBookByName(){
+
+        final BookEntity book = MockData.bookEntity();
+
+        Mockito.when(bookRepository.existByTitle(book.getTitle())).thenReturn(true);
+        Mockito.when(bookRepository.findByTitle(book.getTitle())).thenReturn(book);
+
+        final ResponseEntity<BookDto> result = bookService.getBookByName(book.getTitle());;
+
+        verify(  bookConverter, times(1)).convertToDto(book);
+        assertEquals(result.getStatusCode(), HttpStatus.OK);
     }
 }
