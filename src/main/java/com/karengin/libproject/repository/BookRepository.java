@@ -9,4 +9,5 @@ public interface BookRepository extends JpaRepository<BookEntity, Long> {
     List<BookEntity> findAllByAuthor_Id(long id);
     BookEntity findById(long id);
     BookEntity findByTitle(String tittle);
+    boolean existByTitle(String title);
 }
