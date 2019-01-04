@@ -273,7 +273,6 @@ public class BookServiceTest {
         final BookEntity book = MockData.bookEntity();
 
         Mockito.when(bookRepository.findByTitle(book.getTitle())).thenReturn(book);
-        Mockito.when(bookRepository.findByTitle(book.getTitle())).thenReturn(book);
 
         final ResponseEntity<BookDto> result = bookService.getBookByName(book.getTitle());;
 
