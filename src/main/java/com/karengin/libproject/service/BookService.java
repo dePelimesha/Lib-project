@@ -104,7 +104,7 @@ public class BookService {
     }
 
     public ResponseEntity<BookDto> getBookByName(final String name) {
-        if(bookRepository.existByTitle(name)) {
+        if(bookRepository.findByTitle(name)!=null) {
             return ResponseEntity.status(200).body(
                     bookConverter.convertToDto(bookRepository.findByTitle(name)));
         }
