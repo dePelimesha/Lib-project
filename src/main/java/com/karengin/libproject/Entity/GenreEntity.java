@@ -1,22 +1,28 @@
 package com.karengin.libproject.Entity;
 
-import com.sun.istack.internal.NotNull;
 import lombok.Data;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
 import java.util.List;
 
 @Data
 @Entity
-@Table(name = "genre")
-public class GenreEntity{
+@Table(name = "genres")
+public class GenreEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private long id;
 
     @NotNull
-    private String name;
+    @NotEmpty
+    private String genre;
 
-    @ManyToMany(mappedBy = "genres")
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "book_genre",
+            joinColumns = @JoinColumn(name = "genre_id"),
+            inverseJoinColumns = @JoinColumn(name = "book_id"))
     private List<BookEntity> books;
 }

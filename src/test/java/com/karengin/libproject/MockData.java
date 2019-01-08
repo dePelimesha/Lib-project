@@ -1,10 +1,9 @@
 package com.karengin.libproject;
 
 import com.karengin.libproject.Entity.*;
-import com.karengin.libproject.dto.AuthorDto;
-import com.karengin.libproject.dto.BookDto;
-import com.karengin.libproject.dto.CommentsDto;
-import com.karengin.libproject.dto.UsersDto;
+import com.karengin.libproject.dto.*;
+
+import java.util.Arrays;
 
 public class MockData {
 
@@ -16,13 +15,14 @@ public class MockData {
     private static final String BOOK_DESCRIPTION = "description";
     private static final String COMMENT = "comment";
     private static final String USER_ROLE = "USER";
+    private static final String GENRE = "genre";
 
     public static UsersEntity usersEntity() {
         final UsersEntity usersEntity = new UsersEntity();
         usersEntity.setId(ID);
         usersEntity.setLogin(USER_LOGIN);
         usersEntity.setPassword(USER_PASSWORD);
-        usersEntity.setUser_role(MockData.usersRoleEntity());
+        usersEntity.setUserRole(MockData.usersRoleEntity());
         return usersEntity;
     }
 
@@ -54,6 +54,7 @@ public class MockData {
         bookEntity.setTitle(BOOK_TITLE);
         bookEntity.setAuthor(MockData.authorEntity());
         bookEntity.setDescription(BOOK_DESCRIPTION);
+        bookEntity.setGenresList(Arrays.asList(MockData.genreEntity(),MockData.genreEntity()));
         return bookEntity;
     }
 
@@ -63,6 +64,7 @@ public class MockData {
         bookDto.setTitle(BOOK_TITLE);
         bookDto.setAuthor(AUTHOR_NAME);
         bookDto.setDescription(BOOK_DESCRIPTION);
+        bookDto.setGenres(Arrays.asList(GENRE,GENRE));
         return bookDto;
     }
 
@@ -88,5 +90,19 @@ public class MockData {
         usersRoleEntity.setId(ID);
         usersRoleEntity.setRole(USER_ROLE);
         return usersRoleEntity;
+    }
+
+    public static GenreEntity genreEntity() {
+        final GenreEntity genreEntity = new GenreEntity();
+        genreEntity.setId(ID);
+        genreEntity.setGenre(GENRE);
+        return genreEntity;
+    }
+
+    public static GenreDto genreDto() {
+        final GenreDto genreDto = new GenreDto();
+        genreDto.setId(ID);
+        genreDto.setGenre(GENRE);
+        return genreDto;
     }
 }

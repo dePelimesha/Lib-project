@@ -15,7 +15,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(MockitoJUnitRunner.class)
 public class AuthorConverterTest {
 
-    AuthorConverter authorConverter;
+    private AuthorConverter authorConverter;
 
     @Before
     public void setUp() {
@@ -26,6 +26,7 @@ public class AuthorConverterTest {
     public void convertToEntity() {
         final AuthorDto authorDto = MockData.authorDto();
         final AuthorEntity authorEntity = authorConverter.convertToEntity(authorDto);
+
         assertEquals(authorDto.getName(), authorEntity.getName());
     }
 
@@ -33,6 +34,7 @@ public class AuthorConverterTest {
     public void convertToDto() {
         final AuthorEntity authorEntity = MockData.authorEntity();
         final AuthorDto authorDto = authorConverter.convertToDto(authorEntity);
+
         assertEquals(authorEntity.getName(), authorDto.getName());
     }
 }

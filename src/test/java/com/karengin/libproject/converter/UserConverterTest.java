@@ -24,6 +24,7 @@ public class UserConverterTest {
     public void convertToEntity() {
         final UsersDto usersDto = MockData.usersDto();
         final UsersEntity usersEntity = userConverter.convertToEntity(usersDto);
+
         assertEquals(usersDto.getLogin(), usersEntity.getLogin());
         assertEquals(usersDto.getPassword(), usersEntity.getPassword());
     }
@@ -32,6 +33,7 @@ public class UserConverterTest {
     public void convertToDto() {
         final UsersEntity usersEntity = MockData.usersEntity();
         final UsersDto usersDto = userConverter.convertToDto(usersEntity);
+
         assertEquals(usersEntity.getLogin(), usersDto.getLogin());
         assertEquals(usersEntity.getPassword(), usersDto.getPassword());
     }

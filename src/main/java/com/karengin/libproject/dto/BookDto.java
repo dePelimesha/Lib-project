@@ -3,6 +3,8 @@ package com.karengin.libproject.dto;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 @Data
 @NoArgsConstructor
 public class BookDto {
@@ -10,4 +12,5 @@ public class BookDto {
     private String title;
     private String description;
     private String author;
+    private List<String> genres;
 }

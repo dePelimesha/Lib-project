@@ -20,7 +20,7 @@ public class UsersRoleEntity {
     @NotEmpty
     private String role;
 
-    @OneToMany(mappedBy = "user_role")
+    @OneToMany(mappedBy = "userRole")
     @JsonIgnore
     private List<UsersEntity> users;
 }

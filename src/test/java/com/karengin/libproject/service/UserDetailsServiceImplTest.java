@@ -21,26 +21,20 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 @RunWith(SpringRunner.class)
 public class UserDetailsServiceImplTest {
 
-    UserDetailsServiceImpl userDetailsService;
+    private UserDetailsServiceImpl userDetailsService;
 
     @Mock
     UsersRepository usersRepository;
 
-    @Mock
-    UsersRoleRepository usersRoleRepository;
-
     @Before
     public void setUp() {
-        userDetailsService = new UserDetailsServiceImpl(usersRepository, usersRoleRepository);
+        userDetailsService = new UserDetailsServiceImpl(usersRepository);
     }
 
     @Test
     public void loadUserByUsername() {
         UsersEntity usersEntity = MockData.usersEntity();
-        UsersRoleEntity usersRoleEntity = MockData.usersRoleEntity();
-
         Mockito.when(usersRepository.findByLogin(usersEntity.getLogin())).thenReturn(usersEntity);
-        Mockito.when(usersRoleRepository.findById(usersEntity.getUser_role().getId())).thenReturn(usersRoleEntity);
 
         UserDetails userDetails = userDetailsService.loadUserByUsername(usersEntity.getLogin());
 
@@ -48,6 +42,5 @@ public class UserDetailsServiceImplTest {
         assertEquals(userDetails.getUsername(), usersEntity.getLogin());
         assertEquals(userDetails.getPassword(), usersEntity.getPassword());
         verify(usersRepository, times(1)).findByLogin(usersEntity.getLogin());
-        verify(usersRoleRepository, times(1)).findById(usersRoleEntity.getId());
     }
 }

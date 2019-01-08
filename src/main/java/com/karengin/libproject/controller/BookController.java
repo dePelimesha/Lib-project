@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.GetMapping;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 @RestController
@@ -32,13 +33,19 @@ public class BookController {
     private final GenreService genreService;
 
     @GetMapping("/list")
-    public ResponseEntity<List<BookDto>> getAllBook() {
-        return bookService.getBooksList();
+    public ResponseEntity<List<BookDto>> getAllBook(final HttpServletRequest request) {
+        final String[] genres = request.getParameterValues("genre");
+        return bookService.getBooksList(genres);
     }
 
     @GetMapping("/list/{id}")
     public ResponseEntity<BookDto> getBook(@PathVariable("id") final long id) {
         return bookService.getBookById(id);
+    }
+
+    @GetMapping("/list/search/{search_value}")
+    public ResponseEntity<List<BookDto>> findByTitle(@PathVariable("search_value") final String title) {
+        return bookService.getBooksByTitle(title);
     }
 
     @GetMapping("/list/{book_id}/comments")
@@ -62,12 +69,9 @@ public class BookController {
         return bookService.getBooksListByAuthorId(id);
     }
 
-    @GetMapping("/genre_list")
-    public ResponseEntity<List<GenreDto>> getGenres() { return genreService.getGenresList(); }
-
-    @GetMapping("/genre_list/{id}")
-    public ResponseEntity<List<BookDto>> getBooksByGenre(@PathVariable("id") final long id) {
-        return bookService.getBooksListByGenreId(id);
+    @GetMapping("/genres")
+    public ResponseEntity<List<GenreDto>> getGenres() {
+        return genreService.getGenresList();
     }
 
     private String getPrincipal(){

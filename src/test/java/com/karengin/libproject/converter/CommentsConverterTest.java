@@ -31,7 +31,9 @@ public class CommentsConverterTest {
     public void convertToEntity() {
         final CommentsDto commentsDto = MockData.commentsDto();
         final UsersEntity usersEntity = MockData.usersEntity();
+
         Mockito.when(usersRepository.findByLogin(commentsDto.getUserName())).thenReturn(usersEntity);
+
         final CommentsEntity commentsEntity = commentsConverter.convertToEntity(commentsDto);
         assertEquals(commentsDto.getComment(), commentsEntity.getComment());
         assertEquals(commentsDto.getUserName(), commentsEntity.getUser().getLogin());
@@ -41,6 +43,7 @@ public class CommentsConverterTest {
     public void convertToDto() {
         final CommentsEntity commentsEntity = MockData.commentsEntity();
         final CommentsDto commentsDto = commentsConverter.convertToDto(commentsEntity);
+
         assertEquals(commentsEntity.getComment(), commentsDto.getComment());
         assertEquals(commentsEntity.getUser().getLogin(), commentsDto.getUserName());
     }
