@@ -1,6 +1,7 @@
 package com.karengin.libproject.service;
 
 import com.karengin.libproject.Entity.BookEntity;
+import com.karengin.libproject.Entity.CommentsEntity;
 import com.karengin.libproject.Entity.GenreEntity;
 import com.karengin.libproject.converter.BookConverter;
 import com.karengin.libproject.converter.CommentsConverter;
@@ -105,7 +106,7 @@ public class BookService {
         }
         return ResponseEntity.status(400).body(null);
     }
-
+  
     public ResponseEntity<List<BookDto>> getBooksByTitle(final String title) {
         final List<BookEntity> bookEntities = bookRepository.findAllByTitleContains(title);
         if(bookEntities.isEmpty()) {
@@ -114,5 +115,36 @@ public class BookService {
         return ResponseEntity.status(200).body(
                 bookEntities.stream().map(bookConverter::convertToDto).collect(Collectors.toList())
         );
+    }
+
+    /*author Stanislav Patskevich */
+    public ResponseEntity<String> deleteBook(final long id) {
+        if(bookRepository.existsById(id)) {
+            BookEntity book = bookRepository.findById(id);
+            List<CommentsEntity> commentsList = book.getComments();
+            for (CommentsEntity comment : commentsList) {
+                commentsRepository.delete(comment);
+            }
+            bookRepository.delete(book);
+            return ResponseEntity.status(200).body("Была удалена книга с ID №"+id);
+        } else return ResponseEntity.status(400).body("Книга с ID №"+id+" не была найдена!");
+    }
+
+    public ResponseEntity<String> changeBook(final long id, final BookDto bookDto) {
+        if(bookRepository.existsById(id)) {
+            BookEntity book = bookRepository.findById(id);
+            book.setTitle(bookDto.getTitle());
+            book.setDescription(bookDto.getDescription());
+            if (authorRepository.existsByName(bookDto.getAuthor())){
+                book.setAuthor(authorRepository.findByName(bookDto.getAuthor()));
+            } else {
+                AuthorEntity authorEntity = new AuthorEntity();
+                authorEntity.setName(bookDto.getAuthor());
+                authorRepository.save(authorEntity);
+                book.setAuthor(authorEntity);
+            }
+            bookRepository.save(book);
+            return ResponseEntity.status(200).body("Книга с ID №"+id+" была изменена!");
+        } else return ResponseEntity.status(400).body("Книга с ID №"+id+" не была найдена!");
     }
 }

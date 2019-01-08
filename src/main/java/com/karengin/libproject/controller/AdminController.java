@@ -36,4 +36,25 @@ public class AdminController {
     public ResponseEntity<String> deleteComment(@PathVariable("id") final long id) {
         return commentsService.deleteById(id);
     }
+
+    /*author Stanislav Patskevich */
+    @DeleteMapping("/delete_author/{id}")
+    public ResponseEntity<String> deleteAuthor(@PathVariable("id") final long id) {
+        return authorService.deleteAuthor(id);
+    }
+
+    @PostMapping("/change_author/{id}/{new_name}")
+    public ResponseEntity<String> changeAuthor(@PathVariable("id") final long id, @PathVariable("id") final String new_name) {
+        return authorService.сhangeAuthor(id, new_name);
+    }
+
+    @DeleteMapping("/delete_book/{id}")
+    public ResponseEntity<String> deleteBook(@PathVariable("id") final long id) {
+        return bookService.deleteBook(id);
+    }
+
+    @PostMapping("/change_book/{id}")
+    public ResponseEntity<String> changeBook(@PathVariable("id") final long id, @RequestBody final BookDto bookDto) {
+        return bookService.changeBook(id, bookDto);
+    }
 }
