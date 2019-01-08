@@ -24,7 +24,7 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 @RunWith(SpringRunner.class)
 public class CommentsServiceTest {
 
-    CommentsService commentsService;
+    private CommentsService commentsService;
 
     @Mock
     CommentsRepository commentsRepository;

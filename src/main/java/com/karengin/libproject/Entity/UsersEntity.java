@@ -32,5 +32,5 @@ public class UsersEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_role_id")
     @JsonIgnore
-    private UsersRoleEntity user_role;
+    private UsersRoleEntity userRole;
 }

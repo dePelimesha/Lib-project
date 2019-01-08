@@ -5,10 +5,8 @@ import com.karengin.libproject.config.AuthenticationEntryPoint;
 import com.karengin.libproject.dto.AuthorDto;
 import com.karengin.libproject.dto.BookDto;
 import com.karengin.libproject.dto.CommentsDto;
-import com.karengin.libproject.service.AuthorService;
-import com.karengin.libproject.service.BookService;
-import com.karengin.libproject.service.CommentsService;
-import com.karengin.libproject.service.UserDetailsServiceImpl;
+import com.karengin.libproject.dto.GenreDto;
+import com.karengin.libproject.service.*;
 import net.minidev.json.JSONArray;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -45,10 +43,10 @@ public class BookControllerTest {
     private MockMvc mockMvc;
 
     @MockBean
-    UserDetailsServiceImpl userDetailsService;
+    private UserDetailsServiceImpl userDetailsService;
 
     @MockBean
-    AuthenticationEntryPoint authenticationEntryPoint;
+    private AuthenticationEntryPoint authenticationEntryPoint;
 
     @MockBean
     private BookService bookService;
@@ -59,12 +57,16 @@ public class BookControllerTest {
     @MockBean
     private CommentsService commentsService;
 
+    @MockBean
+    private GenreService genreService;
+
     @Test
     public void getBooksList() throws Exception {
         final BookDto bookDto = MockData.bookDto();
         final List<BookDto> bookDtoList = Arrays.asList(bookDto,bookDto);
+        final String genre = "genre";
 
-        Mockito.when(bookService.getBooksList())
+        Mockito.when(bookService.getBooksList(null))
                 .thenReturn(ResponseEntity.ok(bookDtoList));
 
         mockMvc.perform(get("/books/list"))
@@ -76,15 +78,20 @@ public class BookControllerTest {
                 .andExpect(jsonPath("$[0].title", is(equalTo(bookDto.getTitle()))))
                 .andExpect(jsonPath("$[0].author", is(equalTo(bookDto.getAuthor()))))
                 .andExpect(jsonPath("$[0].description", is(equalTo(bookDto.getDescription()))))
+                .andExpect(jsonPath("$[0].genres[0]", is(equalTo(genre))))
+                .andExpect(jsonPath("$[0].genres[1]", is(equalTo(genre))))
                 .andExpect(jsonPath("$[1].title", is(equalTo(bookDto.getTitle()))))
                 .andExpect(jsonPath("$[1].author", is(equalTo(bookDto.getAuthor()))))
-                .andExpect(jsonPath("$[1].description", is(equalTo(bookDto.getDescription()))));
+                .andExpect(jsonPath("$[1].description", is(equalTo(bookDto.getDescription()))))
+                .andExpect(jsonPath("$[1].genres[0]", is(equalTo(genre))))
+                .andExpect(jsonPath("$[1].genres[1]", is(equalTo(genre))));
 
     }
 
     @Test
     public void getBookById() throws Exception {
         final BookDto bookDto = MockData.bookDto();
+        final String genre = "genre";
 
         Mockito.when(bookService.getBookById(bookDto.getId()))
                 .thenReturn(ResponseEntity.ok(bookDto));
@@ -95,7 +102,9 @@ public class BookControllerTest {
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(jsonPath("$.title", is(equalTo(bookDto.getTitle()))))
                 .andExpect(jsonPath("$.author", is(equalTo(bookDto.getAuthor()))))
-                .andExpect(jsonPath("$.description", is(equalTo(bookDto.getDescription()))));
+                .andExpect(jsonPath("$.description", is(equalTo(bookDto.getDescription()))))
+                .andExpect(jsonPath("$.genres[0]", is(equalTo(genre))))
+                .andExpect(jsonPath("$.genres[1]", is(equalTo(genre))));
     }
 
     @Test
@@ -142,6 +151,7 @@ public class BookControllerTest {
         final AuthorDto authorDto = MockData.authorDto();
         final BookDto bookDto = MockData.bookDto();
         final List<BookDto> bookDtoList = Arrays.asList(bookDto,bookDto);
+        final String genre = "genre";
 
         Mockito.when(bookService.getBooksListByAuthorId(authorDto.getId()))
                 .thenReturn(ResponseEntity.ok(bookDtoList));
@@ -155,9 +165,13 @@ public class BookControllerTest {
                 .andExpect(jsonPath("$[0].title", is(equalTo(bookDto.getTitle()))))
                 .andExpect(jsonPath("$[0].author", is(equalTo(bookDto.getAuthor()))))
                 .andExpect(jsonPath("$[0].description", is(equalTo(bookDto.getDescription()))))
+                .andExpect(jsonPath("$[0].genres[0]", is(equalTo(genre))))
+                .andExpect(jsonPath("$[0].genres[1]", is(equalTo(genre))))
                 .andExpect(jsonPath("$[1].title", is(equalTo(bookDto.getTitle()))))
                 .andExpect(jsonPath("$[1].author", is(equalTo(bookDto.getAuthor()))))
-                .andExpect(jsonPath("$[1].description", is(equalTo(bookDto.getDescription()))));
+                .andExpect(jsonPath("$[1].description", is(equalTo(bookDto.getDescription()))))
+                .andExpect(jsonPath("$[1].genres[0]", is(equalTo(genre))))
+                .andExpect(jsonPath("$[1].genres[1]", is(equalTo(genre))));
     }
 
     @Test
@@ -175,6 +189,24 @@ public class BookControllerTest {
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(content().string("Comment was added"));
+    }
+
+    @Test
+    public void getGenresList() throws Exception{
+        final GenreDto genreDto = MockData.genreDto();
+        final List<GenreDto> genreList = Arrays.asList(genreDto, genreDto);
+
+        Mockito.when(genreService.getGenresList())
+                .thenReturn(ResponseEntity.status(200).body(genreList));
+
+        mockMvc.perform(get("/books/genres"))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(jsonPath("$", isA(JSONArray.class)))
+                .andExpect(jsonPath("$.length()", is(2)))
+                .andExpect(jsonPath("$[0].genre", is(equalTo(genreDto.getGenre()))))
+                .andExpect(jsonPath("$[1].genre", is(equalTo(genreDto.getGenre()))));
     }
 }
 

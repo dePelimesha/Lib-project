@@ -1,6 +1,5 @@
 package com.karengin.libproject.Entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -10,17 +9,19 @@ import java.util.List;
 
 @Data
 @Entity
-@Table(name = "users_role")
-public class UsersRoleEntity {
+@Table(name = "genres")
+public class GenreEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @NotNull
     @NotEmpty
-    private String role;
+    private String genre;
 
-    @OneToMany(mappedBy = "userRole")
-    @JsonIgnore
-    private List<UsersEntity> users;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "book_genre",
+            joinColumns = @JoinColumn(name = "genre_id"),
+            inverseJoinColumns = @JoinColumn(name = "book_id"))
+    private List<BookEntity> books;
 }

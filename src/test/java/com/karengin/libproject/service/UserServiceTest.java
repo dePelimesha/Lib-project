@@ -27,7 +27,7 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 @RunWith(SpringRunner.class)
 public class UserServiceTest {
 
-    UserService userService;
+    private UserService userService;
 
     @Mock
     private UsersRepository usersRepository;

@@ -27,7 +27,7 @@ public class UserService {
         UsersEntity user = userConverter.convertToEntity(usersDto);
         String hashPassword = passwordEncoder.encode(user.getPassword());
         user.setPassword(hashPassword);
-        user.setUser_role(usersRoleRepository.findById(2));
+        user.setUserRole(usersRoleRepository.findById(2));
         usersRepository.save(user);
         return ResponseEntity.status(201).body("Account was created");
     }

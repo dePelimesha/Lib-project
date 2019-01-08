@@ -29,7 +29,7 @@ import static org.mockito.internal.verification.VerificationModeFactory.times;
 @RunWith(SpringRunner.class)
 public class AuthorServiceTest {
 
-    AuthorService authorService;
+    private AuthorService authorService;
 
     @Mock
     AuthorRepository authorRepository;

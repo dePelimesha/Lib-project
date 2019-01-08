@@ -1,5 +1,6 @@
 package com.karengin.libproject.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.karengin.libproject.MockData;
 import com.karengin.libproject.config.AuthenticationEntryPoint;
 import com.karengin.libproject.dto.AuthorDto;
@@ -71,13 +72,14 @@ public class AdminControllerTest {
     @WithMockUser(username = "testUser", password = "pass123", roles = "ADMIN")
     public void addBook() throws Exception {
         final BookDto bookDto = MockData.bookDto();
+        ObjectMapper mapper = new ObjectMapper();
 
         Mockito.when(bookService.createBook(bookDto)).
                 thenReturn(ResponseEntity.status(201).body("Book was added"));
 
         mockMvc.perform(post("/admin/create_book").with(csrf())
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(toJson(bookDto)))
+                .content(mapper.writeValueAsString(bookDto)))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(content().string("Book was added"));
