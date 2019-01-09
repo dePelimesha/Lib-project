@@ -7,6 +7,9 @@ import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.*;
 import com.vaadin.ui.components.grid.MultiSelectionModel;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public abstract class AbstractView<T> extends VerticalLayout implements View {
 
     HorizontalLayout headerLayout = new HorizontalLayout();
@@ -15,6 +18,7 @@ public abstract class AbstractView<T> extends VerticalLayout implements View {
     Button deleteButton = new Button("Delete");
     TextField nameFilteringTextField = new TextField();
 
+    List<T> dtoList = new ArrayList<>();
     DataProvider<T, String> dataProvider;
     Grid<T> grid;
     MultiSelectionModel<T> selectionModel;

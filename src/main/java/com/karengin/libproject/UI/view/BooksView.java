@@ -32,8 +32,6 @@ public class BooksView extends AbstractView<BookDto> {
     @Autowired
     private GenreService genreService;
 
-    private List<BookDto> books = new ArrayList<>();
-
     @PostConstruct
     void init() {
         grid = new Grid<>(BookDto.class);
@@ -48,11 +46,11 @@ public class BooksView extends AbstractView<BookDto> {
                 query -> {
                     String filter = query.getFilter().orElse(null);
                     if (filter == null) {
-                        books = bookService.getBooksList(null).getBody();
+                        dtoList = bookService.getBooksList(null).getBody();
                     } else {
-                        books = bookService.getBooksByTitle(filter).getBody();
+                        dtoList = bookService.getBooksByTitle(filter).getBody();
                     }
-                    return books.stream();
+                    return dtoList.stream();
                 },
                 query -> {
                     String filter = query.getFilter().orElse(null);

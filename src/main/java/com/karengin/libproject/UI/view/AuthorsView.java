@@ -22,8 +22,6 @@ public class AuthorsView extends AbstractView<AuthorDto>{
     @Autowired
     private AuthorService authorService;
 
-    private List<AuthorDto> authors = new ArrayList<>();
-
     @PostConstruct
     void init() {
         grid = new Grid<>(AuthorDto.class);
@@ -35,8 +33,8 @@ public class AuthorsView extends AbstractView<AuthorDto>{
 
         dataProvider = DataProvider.fromFilteringCallbacks(
                 query -> {
-                    authors = authorService.getAuthorsList().getBody();
-                    return authors.stream();
+                    dtoList = authorService.getAuthorsList().getBody();
+                    return dtoList.stream();
                 },
                 query -> toIntExact(authorService.getAuthorsCount().getBody())
         );
