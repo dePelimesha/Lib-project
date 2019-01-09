@@ -68,19 +68,26 @@ public class BooksView extends AbstractView<BookDto> {
 
     @Override
     protected void setEventListeners() {
-        addButton.addClickListener(clickEvent ->
-                getUI().addWindow(new AddBookWindow(bookService, authorService, genreService))
-        );
+        addButton.addClickListener(clickEvent -> {
+            final Window window = new AddBookWindow(bookService, authorService, genreService);
+            window.addCloseListener(closeEvent -> dataProvider.refreshAll());
+            getUI().addWindow(window);
+        });
 
         editButton.addClickListener(clickEvent ->
-                grid.getSelectedItems().forEach(bookDto ->
-                        getUI().addWindow(new EditBookWindow(bookDto,bookService, authorService, genreService)))
+            grid.getSelectedItems().forEach(bookDto -> {
+                final Window window = new EditBookWindow(bookDto, bookService, authorService, genreService);
+                window.addCloseListener(closeEvent -> dataProvider.refreshAll());
+                getUI().addWindow(window);
+            })
         );
 
-        deleteButton.addClickListener(clickEvent ->
-                grid.getSelectedItems().forEach(bookDto ->
-                        bookService.removeBook(bookDto))
-        );
+        deleteButton.addClickListener(clickEvent -> {
+            grid.getSelectedItems().forEach(bookDto ->
+                    bookService.removeBook(bookDto));
+            dataProvider.refreshAll();
+            selectionModel.deselectAll();
+        });
 
         nameFilteringTextField.addValueChangeListener(valueChangeEvent -> {
             String filter = valueChangeEvent.getValue();

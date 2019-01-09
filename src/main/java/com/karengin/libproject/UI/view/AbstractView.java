@@ -1,6 +1,5 @@
 package com.karengin.libproject.UI.view;
 
-import com.karengin.libproject.dto.BookDto;
 import com.vaadin.data.provider.ConfigurableFilterDataProvider;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.navigator.View;
