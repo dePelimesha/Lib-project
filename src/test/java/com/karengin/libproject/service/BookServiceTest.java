@@ -29,6 +29,9 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -287,5 +290,84 @@ public class BookServiceTest {
         assertNull(result.getBody());
         assertEquals(result.getStatusCode(), HttpStatus.BAD_REQUEST);
         verify(bookRepository, times(1)).findAllByTitleStartsWith(search);
+    }
+  
+    /*author Stanislav Patskevich */
+    @Test
+    public void deleteBook(){
+
+        final BookEntity book = new BookEntity();
+        final CommentsEntity comment1 = new CommentsEntity();
+        final CommentsEntity comment2 = new CommentsEntity();
+        final List<CommentsEntity> listComment = new ArrayList<>();
+
+        book.setId(1);
+        listComment.add(comment1);
+        listComment.add(comment2);
+        book.setComments(listComment);
+        Mockito.when(bookRepository.existsById(new Long(1))).thenReturn(true);
+        Mockito.when(bookRepository.findById(1)).thenReturn(book);
+
+
+        ResponseEntity<String> result = bookService.deleteBook(1);
+
+        assertNotNull(result.getBody());
+        assertEquals(result.getStatusCode(), HttpStatus.OK);
+        assertEquals(result.getBody(),"Была удалена книга с ID №1");
+        verify(commentsRepository, times(2)).delete(any(CommentsEntity.class));
+        verify(bookRepository, times(1)).delete(book);
+
+    }
+
+    @Test
+    public void changeBook(){
+
+        final BookEntity book = new BookEntity();
+        final AuthorEntity author = new AuthorEntity();
+        final BookDto bookDto = new BookDto();
+
+        author.setId(1);
+        author.setName("name");
+        book.setId(1);
+        book.setTitle("title");
+        book.setDescription("description");
+        bookDto.setId(1);
+        bookDto.setTitle("new title");
+        bookDto.setDescription("new description");
+        bookDto.setAuthor("name");
+
+        Mockito.when(bookRepository.existsById(new Long(1))).thenReturn(true);
+        Mockito.when(bookRepository.findById(1)).thenReturn(book);
+        Mockito.when(authorRepository.existsByName(bookDto.getAuthor())).thenReturn(true);
+        Mockito.when(authorRepository.findByName(bookDto.getAuthor())).thenReturn(author);
+
+        final ResponseEntity<String> result = bookService.changeBook(1, bookDto);
+
+        assertNotNull(result.getBody());
+        assertEquals(result.getStatusCode(), HttpStatus.OK);
+        assertEquals(result.getBody(),"Книга с ID №1 была изменена!");
+        assertEquals(book.getTitle(), bookDto.getTitle());
+        assertEquals(book.getDescription(), bookDto.getDescription());
+        assertEquals(book.getAuthor(), author);
+        verify(bookRepository, times(1)).save(book);
+
+
+        Mockito.when(authorRepository.existsByName(bookDto.getAuthor())).thenReturn(false);
+
+        final ResponseEntity<String> newResult = bookService.changeBook(1, bookDto);
+        verify( authorRepository, times(1)).save(any(AuthorEntity.class));
+    }
+
+    @Test
+    public void getBookByName(){
+
+        final BookEntity book = MockData.bookEntity();
+
+        Mockito.when(bookRepository.findByTitle(book.getTitle())).thenReturn(book);
+
+        final ResponseEntity<BookDto> result = bookService.getBookByName(book.getTitle());;
+
+        verify(  bookConverter, times(1)).convertToDto(book);
+        assertEquals(result.getStatusCode(), HttpStatus.OK);
     }
 }

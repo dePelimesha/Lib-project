@@ -161,4 +161,35 @@ public class BookService {
         bookRepository.delete(bookConverter.convertToEntity(bookDto));
         return ResponseEntity.status(200).body("Book was deleted");
     }
+  
+      /*author Stanislav Patskevich */
+    public ResponseEntity<String> deleteBook(final long id) {
+        if(bookRepository.existsById(id)) {
+            BookEntity book = bookRepository.findById(id);
+            List<CommentsEntity> commentsList = book.getComments();
+            for (CommentsEntity comment : commentsList) {
+                commentsRepository.delete(comment);
+            }
+            bookRepository.delete(book);
+            return ResponseEntity.status(200).body("Была удалена книга с ID №"+id);
+        } else return ResponseEntity.status(400).body("Книга с ID №"+id+" не была найдена!");
+    }
+
+    public ResponseEntity<String> changeBookNew(final long id, final BookDto bookDto) {
+        if(bookRepository.existsById(id)) {
+            BookEntity book = bookRepository.findById(id);
+            book.setTitle(bookDto.getTitle());
+            book.setDescription(bookDto.getDescription());
+            if (authorRepository.existsByName(bookDto.getAuthor())){
+                book.setAuthor(authorRepository.findByName(bookDto.getAuthor()));
+            } else {
+                AuthorEntity authorEntity = new AuthorEntity();
+                authorEntity.setName(bookDto.getAuthor());
+                authorRepository.save(authorEntity);
+                book.setAuthor(authorEntity);
+            }
+            bookRepository.save(book);
+            return ResponseEntity.status(200).body("Книга с ID №"+id+" была изменена!");
+        } else return ResponseEntity.status(400).body("Книга с ID №"+id+" не была найдена!");
+    }
 }
