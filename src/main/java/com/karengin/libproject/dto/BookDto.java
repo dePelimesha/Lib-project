@@ -3,6 +3,7 @@ package com.karengin.libproject.dto;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -12,5 +13,5 @@ public class BookDto {
     private String title;
     private String description;
     private String author;
-    private List<String> genres;
+    private List<String> genres = new ArrayList<>();
 }
