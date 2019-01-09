@@ -7,6 +7,7 @@ import com.karengin.libproject.Entity.GenreEntity;
 import com.karengin.libproject.MockData;
 import com.karengin.libproject.converter.BookConverter;
 import com.karengin.libproject.converter.CommentsConverter;
+import com.karengin.libproject.converter.GenreConverter;
 import com.karengin.libproject.dto.BookDto;
 import com.karengin.libproject.dto.CommentsDto;
 import com.karengin.libproject.repository.AuthorRepository;
@@ -18,6 +19,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
@@ -55,11 +57,14 @@ public class BookServiceTest {
     @Mock
     GenreRepository genreRepository;
 
+    @Mock
+    GenreConverter genreConverter;
 
     @Before
     public void setUp() {
         bookService = new BookService(bookRepository, bookConverter,
-                commentsRepository, commentsConverter, authorRepository, genreRepository);
+                commentsRepository, commentsConverter, authorRepository,
+                genreRepository, genreConverter);
     }
 
     @Test
@@ -147,7 +152,6 @@ public class BookServiceTest {
         final String[] genreArray = {"genre", "genre"};
         final GenreEntity genreEntity = MockData.genreEntity();
         genreEntity.setBooks(Arrays.asList(bookEntity, bookEntity));
-        bookEntity.setGenresList(Arrays.asList(genreEntity, genreEntity));
         final List<BookEntity> bookEntityList = Arrays.asList(bookEntity, bookEntity);
 
         Mockito.when(genreRepository.getByGenre(genreEntity.getGenre())).thenReturn(genreEntity);
@@ -252,7 +256,7 @@ public class BookServiceTest {
         final BookDto bookDto = MockData.bookDto();
         final GenreEntity genreEntity = MockData.genreEntity();
 
-        Mockito.when(bookRepository.findAllByTitleContains(bookEntity.getTitle())).thenReturn(bookEntityList);
+        Mockito.when(bookRepository.findAllByTitleStartsWith(bookEntity.getTitle())).thenReturn(bookEntityList);
         Mockito.when(bookConverter.convertToDto(bookEntity)).thenReturn(bookDto);
 
         ResponseEntity<List<BookDto>> result = bookService.getBooksByTitle(bookEntity.getTitle());
@@ -261,7 +265,7 @@ public class BookServiceTest {
         assertNotNull(result.getBody());
         assertEquals(resultList.size(), bookEntityList.size());
         assertEquals(result.getStatusCode(), HttpStatus.OK);
-        verify(bookRepository, times(1)).findAllByTitleContains(bookEntity.getTitle());
+        verify(bookRepository, times(1)).findAllByTitleStartsWith(bookEntity.getTitle());
         verify(bookConverter, times(2)).convertToDto(bookEntity);
         resultList.forEach(book -> {
             assertEquals(book.getTitle(), bookEntity.getTitle());
@@ -276,12 +280,12 @@ public class BookServiceTest {
         final String search = "search";
         final List<BookEntity> bookEntityList =  new ArrayList<>();
 
-        Mockito.when(bookRepository.findAllByTitleContains(search)).thenReturn(bookEntityList);
+        Mockito.when(bookRepository.findAllByTitleStartsWith(search)).thenReturn(bookEntityList);
 
         ResponseEntity<List<BookDto>> result = bookService.getBooksByTitle(search);
 
         assertNull(result.getBody());
         assertEquals(result.getStatusCode(), HttpStatus.BAD_REQUEST);
-        verify(bookRepository, times(1)).findAllByTitleContains(search);
+        verify(bookRepository, times(1)).findAllByTitleStartsWith(search);
     }
 }

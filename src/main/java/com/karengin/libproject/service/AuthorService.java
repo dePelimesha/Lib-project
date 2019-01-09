@@ -31,4 +31,8 @@ public class AuthorService {
         }
         return ResponseEntity.status(403).body("Author already exists");
     }
+
+    public ResponseEntity<Long> getAuthorsCount() {
+        return ResponseEntity.status(200).body(authorRepository.count());
+    }
 }

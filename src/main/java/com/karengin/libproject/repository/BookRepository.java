@@ -8,6 +8,6 @@ import java.util.List;
 public interface BookRepository extends JpaRepository<BookEntity, Long> {
     List<BookEntity> findAllByAuthor_Id(long id);
     BookEntity findById(long id);
-    List<BookEntity> findAllByTitleContains(String title);
-
+    List<BookEntity> findAllByTitleStartsWith(String title);
+    Long countByTitleStartsWith(String title);
 }

@@ -54,9 +54,17 @@ public class BookController {
     }
 
     @PostMapping("/list/{book_id}/add_comment")
-    public ResponseEntity<String> addComments(@PathVariable("book_id") final long id, @RequestBody CommentsDto commentsDto) {
+    public ResponseEntity<String> addComments(@PathVariable("book_id") final long id,
+                                              @RequestBody final CommentsDto commentsDto) {
         commentsDto.setUserName(getPrincipal());
         return commentsService.createComment(id, commentsDto);
+    }
+
+    @PostMapping("/list/{book_id}/change")
+    public ResponseEntity<String> changeBook(@PathVariable("book_id") final long id,
+                                                   @RequestBody final BookDto bookDto) {
+        bookDto.setId(id);
+        return bookService.changeBook(bookDto);
     }
 
     @GetMapping("/auth_list")

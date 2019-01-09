@@ -4,6 +4,7 @@ import com.karengin.libproject.Entity.BookEntity;
 import com.karengin.libproject.Entity.GenreEntity;
 import com.karengin.libproject.converter.BookConverter;
 import com.karengin.libproject.converter.CommentsConverter;
+import com.karengin.libproject.converter.GenreConverter;
 import com.karengin.libproject.repository.AuthorRepository;
 import com.karengin.libproject.repository.BookRepository;
 import com.karengin.libproject.repository.CommentsRepository;
@@ -30,6 +31,7 @@ public class BookService {
     private final CommentsConverter commentsConverter;
     private final AuthorRepository authorRepository;
     private final GenreRepository genreRepository;
+    private final GenreConverter genreConverter;
 
     public ResponseEntity<String> createBook(final BookDto bookDto) {
         if(bookDto.getAuthor() == null) {
@@ -40,39 +42,35 @@ public class BookService {
             authorRepository.save(authorEntity);
         }
 
-        final boolean[] exists = {true};
-
         bookDto.getGenres().forEach(genre -> {
             if (genreRepository.getByGenre(genre) == null) {
-                exists[0] = false;
+                GenreEntity newGenre = new GenreEntity();
+                newGenre.setGenre(genre);
+                genreRepository.save(newGenre);
             }
         });
 
-        if(exists[0]) {
-            bookRepository.save(bookConverter.convertToEntity(bookDto));
-            return ResponseEntity.status(201).body("Book was added");
-        }
-
-        return ResponseEntity.status(400).body("No such genre");
+        bookRepository.save(bookConverter.convertToEntity(bookDto));
+        return ResponseEntity.status(201).body("Book was added");
     }
 
     public ResponseEntity<List<BookDto>> getBooksList(final String[] genres) {
         if (genres != null) {
-            List<BookEntity> selected = genreRepository.getByGenre(genres[0]).getBooks();
+            List<BookDto> selected = genreRepository.getByGenre(genres[0]).getBooks()
+                    .stream().map(bookConverter::convertToDto).collect(Collectors.toList());
 
             for (int i = 1; i < genres.length; i++) {
                 final GenreEntity genre = genreRepository.getByGenre(genres[i]);
-                final List<BookEntity> afterDelete = new ArrayList<>(selected);
-                selected.forEach(bookEntity -> {
-                    if (!bookEntity.getGenresList().contains(genre)) {
-                        afterDelete.remove(bookEntity);
+                final List<BookDto> afterDelete = new ArrayList<>(selected);
+                selected.forEach(bookDto -> {
+                    if (!bookDto.getGenres().contains(genre.getGenre())) {
+                        afterDelete.remove(bookDto);
                     }
                 });
                 selected = new ArrayList<>(afterDelete);
             }
 
-            return ResponseEntity.status(200).body(
-                    selected.stream().map(bookConverter::convertToDto).collect(Collectors.toList()));
+            return ResponseEntity.status(200).body(selected);
         }
 
         return ResponseEntity.status(200).body(
@@ -107,12 +105,60 @@ public class BookService {
     }
 
     public ResponseEntity<List<BookDto>> getBooksByTitle(final String title) {
-        final List<BookEntity> bookEntities = bookRepository.findAllByTitleContains(title);
+        final List<BookEntity> bookEntities = bookRepository.findAllByTitleStartsWith(title);
         if(bookEntities.isEmpty()) {
             return ResponseEntity.status(400).body(null);
         }
         return ResponseEntity.status(200).body(
                 bookEntities.stream().map(bookConverter::convertToDto).collect(Collectors.toList())
         );
+    }
+
+    public ResponseEntity<Long> getBooksCount(final String title) {
+        if (title == null) {
+            return ResponseEntity.status(200).body(bookRepository.count());
+        }
+        return ResponseEntity.status(200).body(bookRepository.countByTitleStartsWith(title));
+    }
+
+    public ResponseEntity<String> changeBook(final BookDto bookDto) {
+        BookEntity changedBook = bookRepository.findById(bookDto.getId());
+        if (changedBook != null) {
+            changedBook.setTitle(bookDto.getTitle());
+            changedBook.setDescription(bookDto.getDescription());
+
+            if(bookDto.getAuthor().equals("")) {
+                changedBook.setAuthor(authorRepository.getByName("No author"));
+            } else if (authorRepository.getByName(bookDto.getAuthor()) == null) {
+                AuthorEntity authorEntity = new AuthorEntity();
+                authorEntity.setName(bookDto.getAuthor());
+                authorRepository.save(authorEntity);
+                changedBook.setAuthor(authorEntity);
+            } else {
+                changedBook.setAuthor(authorRepository.getByName(bookDto.getAuthor()));
+            }
+
+            final List<GenreEntity> genreEntities = new ArrayList<>();
+
+            bookDto.getGenres().forEach(genre -> {
+                GenreEntity currGenre = genreRepository.getByGenre(genre);
+                if (currGenre == null) {
+                    currGenre = new GenreEntity();
+                    currGenre.setGenre(genre);
+                    genreRepository.save(currGenre);
+                }
+                genreEntities.add(currGenre);
+            });
+
+            changedBook.setGenresList(genreEntities);
+            bookRepository.save(changedBook);
+            return ResponseEntity.status(201).body("Book was changed");
+        }
+        return ResponseEntity.status(400).body("No such book");
+    }
+
+    public ResponseEntity<String> removeBook(final BookDto bookDto) {
+        bookRepository.delete(bookConverter.convertToEntity(bookDto));
+        return ResponseEntity.status(200).body("Book was deleted");
     }
 }

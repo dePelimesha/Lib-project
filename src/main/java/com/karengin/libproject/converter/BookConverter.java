@@ -26,8 +26,7 @@ public class BookConverter implements DtoEntityConverter<BookDto, BookEntity> {
     @Override
     public BookEntity convertToEntity(final BookDto dto) {
         final BookEntity bookEntity = new BookEntity();
-        bookEntity.setTitle(dto.getTitle());
-        bookEntity.setDescription(dto.getDescription());
+        BeanUtils.copyProperties(dto, bookEntity);
         bookEntity.setAuthor(authorRepository.getByName(dto.getAuthor()));
         bookEntity.setGenresList(genreConverter.convertToEntity(dto.getGenres()));
         return bookEntity;
