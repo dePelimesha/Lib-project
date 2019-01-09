@@ -55,6 +55,6 @@ public class AdminController {
 
     @PostMapping("/change_book/{id}")
     public ResponseEntity<String> changeBook(@PathVariable("id") final long id, @RequestBody final BookDto bookDto) {
-        return bookService.changeBook(id, bookDto);
+        return bookService.changeBookNew(id, bookDto);
     }
 }

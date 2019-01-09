@@ -1,6 +1,7 @@
 package com.karengin.libproject.service;
 
 import com.karengin.libproject.Entity.BookEntity;
+import com.karengin.libproject.Entity.CommentsEntity;
 import com.karengin.libproject.Entity.GenreEntity;
 import com.karengin.libproject.converter.BookConverter;
 import com.karengin.libproject.converter.CommentsConverter;

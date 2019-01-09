@@ -37,6 +37,7 @@ public class AuthorService {
 
     public ResponseEntity<Long> getAuthorsCount() {
         return ResponseEntity.status(200).body(authorRepository.count());
+    }
 
     /*author Stanislav Patskevich */
     public ResponseEntity<String> deleteAuthor(final long id) {

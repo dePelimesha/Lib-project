@@ -336,12 +336,12 @@ public class BookServiceTest {
         bookDto.setDescription("new description");
         bookDto.setAuthor("name");
 
-        Mockito.when(bookRepository.existsById(new Long(1))).thenReturn(true);
+        Mockito.when(bookRepository.existsById(1L)).thenReturn(true);
         Mockito.when(bookRepository.findById(1)).thenReturn(book);
         Mockito.when(authorRepository.existsByName(bookDto.getAuthor())).thenReturn(true);
         Mockito.when(authorRepository.findByName(bookDto.getAuthor())).thenReturn(author);
 
-        final ResponseEntity<String> result = bookService.changeBook(1, bookDto);
+        final ResponseEntity<String> result = bookService.changeBookNew(1, bookDto);
 
         assertNotNull(result.getBody());
         assertEquals(result.getStatusCode(), HttpStatus.OK);
@@ -354,20 +354,20 @@ public class BookServiceTest {
 
         Mockito.when(authorRepository.existsByName(bookDto.getAuthor())).thenReturn(false);
 
-        final ResponseEntity<String> newResult = bookService.changeBook(1, bookDto);
+        final ResponseEntity<String> newResult = bookService.changeBookNew(1, bookDto);
         verify( authorRepository, times(1)).save(any(AuthorEntity.class));
     }
-
-    @Test
-    public void getBookByName(){
-
-        final BookEntity book = MockData.bookEntity();
-
-        Mockito.when(bookRepository.findByTitle(book.getTitle())).thenReturn(book);
-
-        final ResponseEntity<BookDto> result = bookService.getBookByName(book.getTitle());;
-
-        verify(  bookConverter, times(1)).convertToDto(book);
-        assertEquals(result.getStatusCode(), HttpStatus.OK);
-    }
+//
+//    @Test
+//    public void getBookByName(){
+//
+//        final BookEntity book = MockData.bookEntity();
+//
+//        Mockito.when(bookRepository.findByTitle(book.getTitle())).thenReturn(book);
+//
+//        final ResponseEntity<BookDto> result = bookService.getBookByName(book.getTitle());;
+//
+//        verify(  bookConverter, times(1)).convertToDto(book);
+//        assertEquals(result.getStatusCode(), HttpStatus.OK);
+//    }
 }
