@@ -25,10 +25,6 @@ public class UsersEntity {
     @JsonIgnore
     private String password;
 
-    @OneToMany(mappedBy = "user")
-    @JsonIgnore
-    private List<CommentsEntity> comments;
-
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_role_id")
     @JsonIgnore

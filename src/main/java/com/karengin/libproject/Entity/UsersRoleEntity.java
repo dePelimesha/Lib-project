@@ -1,12 +1,10 @@
 package com.karengin.libproject.Entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.List;
 
 @Data
 @Entity
@@ -19,8 +17,4 @@ public class UsersRoleEntity {
     @NotNull
     @NotEmpty
     private String role;
-
-    @OneToMany(mappedBy = "userRole")
-    @JsonIgnore
-    private List<UsersEntity> users;
 }

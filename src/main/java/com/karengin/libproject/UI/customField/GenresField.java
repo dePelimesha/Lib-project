@@ -3,7 +3,6 @@ package com.karengin.libproject.UI.customField;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.shared.Registration;
 import com.vaadin.ui.*;
 
 import java.util.ArrayList;

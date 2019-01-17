@@ -11,14 +11,14 @@ import com.vaadin.spring.annotation.SpringView;
 import com.vaadin.ui.*;
 import com.vaadin.ui.components.grid.MultiSelectionModel;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.ArrayList;
-import java.util.List;
 
 import static java.lang.Math.toIntExact;
 
 @SpringView(name = BooksView.NAME)
+@Component(BooksView.NAME)
 public class BooksView extends AbstractView<BookDto> {
 
     public static final String NAME = "books";
@@ -68,14 +68,20 @@ public class BooksView extends AbstractView<BookDto> {
     protected void setEventListeners() {
         addButton.addClickListener(clickEvent -> {
             final Window window = new AddBookWindow(bookService, authorService, genreService);
-            window.addCloseListener(closeEvent -> dataProvider.refreshAll());
+            window.addCloseListener(closeEvent -> {
+                dataProvider.refreshAll();
+                selectionModel.deselectAll();
+            });
             getUI().addWindow(window);
         });
 
         editButton.addClickListener(clickEvent ->
             grid.getSelectedItems().forEach(bookDto -> {
                 final Window window = new EditBookWindow(bookDto, bookService, authorService, genreService);
-                window.addCloseListener(closeEvent -> dataProvider.refreshAll());
+                window.addCloseListener(closeEvent -> {
+                    dataProvider.refreshAll();
+                    selectionModel.deselectAll();
+                });
                 getUI().addWindow(window);
             })
         );
@@ -85,6 +91,7 @@ public class BooksView extends AbstractView<BookDto> {
                     bookService.removeBook(bookDto));
             dataProvider.refreshAll();
             selectionModel.deselectAll();
+            Notification.show("Selected books was deleted");
         });
 
         nameFilteringTextField.addValueChangeListener(valueChangeEvent -> {

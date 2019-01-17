@@ -9,11 +9,14 @@ import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationException;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.spring.annotation.ViewScope;
 import com.vaadin.ui.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
+@ViewScope
 public class EditBookWindow extends Window {
 
     private List<String> authors = new ArrayList<>();
@@ -62,8 +65,10 @@ public class EditBookWindow extends Window {
         bookDtoBinder.forField(bookDescriptionTextFiled)
                 .bind(BookDto::getDescription, BookDto::setDescription);
         bookDtoBinder.forField(authorsComboBox)
+                .withValidator(Objects::nonNull, "Author required")
                 .bind(BookDto::getAuthor, BookDto::setAuthor);
         bookDtoBinder.forField(genresField)
+                .withValidator(list -> list.size() > 0, "Select genres")
                 .bind(BookDto::getGenres, BookDto::setGenres);
         bookDtoBinder.readBean(book);
     }
@@ -72,24 +77,15 @@ public class EditBookWindow extends Window {
         saveButton.addClickListener(clickEvent -> {
             try {
                 bookDtoBinder.writeBean(book);
-                bookService.changeBook(book);
+                Notification.show(bookService.changeBook(book).getBody());
+                this.close();
             } catch (ValidationException e) {
-                Notification.show("Wrong value");
+                Notification.show("Wrong value", Notification.Type.ERROR_MESSAGE);
             }
-            this.close();
         });
         cancelButton.addClickListener(clickEvent -> {
             bookDtoBinder.readBean(book);
             this.close();
-        });
-        genresField.addValueChangeListener(valueChangeEvent -> {
-            genresField.getValue().forEach(System.out::println);
-        });
-        bookDtoBinder.addValueChangeListener(valueChangeEvent -> {
-            System.out.println(book.getTitle());
-            System.out.println(book.getAuthor());
-            System.out.println(book.getDescription());
-            book.getGenres().forEach(System.out::println);
         });
     }
 

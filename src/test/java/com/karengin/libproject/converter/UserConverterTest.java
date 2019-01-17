@@ -3,9 +3,11 @@ package com.karengin.libproject.converter;
 import com.karengin.libproject.Entity.UsersEntity;
 import com.karengin.libproject.MockData;
 import com.karengin.libproject.dto.UsersDto;
+import com.karengin.libproject.repository.UsersRoleRepository;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnitRunner;
 
 import static org.junit.Assert.assertEquals;
@@ -15,9 +17,12 @@ public class UserConverterTest {
 
     private UserConverter userConverter;
 
+    @Mock
+    UsersRoleRepository usersRoleRepository;
+
     @Before
     public void setUp() {
-        userConverter = new UserConverter();
+        userConverter = new UserConverter(usersRoleRepository);
     }
 
     @Test

@@ -9,14 +9,15 @@ import com.vaadin.data.Binder;
 import com.vaadin.data.ValidationException;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.data.provider.ListDataProvider;
+import com.vaadin.spring.annotation.ViewScope;
 import com.vaadin.ui.*;
 import com.vaadin.ui.TextField;
-import lombok.AllArgsConstructor;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
-@AllArgsConstructor
+@ViewScope
 public class AddBookWindow extends Window {
 
     private List<String> authors = new ArrayList<>();
@@ -60,8 +61,10 @@ public class AddBookWindow extends Window {
         bookDtoBinder.forField(bookDescriptionTextFiled)
                 .bind(BookDto::getDescription, BookDto::setDescription);
         bookDtoBinder.forField(authorsComboBox)
+                .withValidator(Objects::nonNull, "Author required")
                 .bind(BookDto::getAuthor, BookDto::setAuthor);
         bookDtoBinder.forField(genresField)
+                .withValidator(list -> list.size() > 0, "Select genres")
                 .bind(BookDto::getGenres, BookDto::setGenres);
     }
 
@@ -69,18 +72,13 @@ public class AddBookWindow extends Window {
         saveButton.addClickListener(clickEvent -> {
             try {
                 bookDtoBinder.writeBean(book);
-                System.out.println(book.getTitle());
-                book.getGenres().forEach(System.out::println);
-                bookService.createBook(book);
+                Notification.show(bookService.createBook(book).getBody());
+                this.close();
             } catch (ValidationException e) {
-                Notification.show("Wrong value");
+                Notification.show("Wrong value", Notification.Type.ERROR_MESSAGE);
             }
-            this.close();
         });
-        cancelButton.addClickListener(clickEvent -> {
-            bookDtoBinder.readBean(book);
-            this.close();
-        });
+        cancelButton.addClickListener(clickEvent -> this.close());
     }
 
     private void fillAuthorsList(final AuthorService authorService) {

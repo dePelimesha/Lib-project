@@ -9,4 +9,5 @@ public class UsersDto {
     private long id;
     private String password;
     private String login;
+    private String role;
 }
