@@ -2,11 +2,14 @@ package com.karengin.libproject.service;
 
 import com.karengin.libproject.Entity.AuthorEntity;
 import com.karengin.libproject.Entity.BookEntity;
+import com.karengin.libproject.UI.view.BooksView;
+import com.karengin.libproject.converter.AbstractConverter;
 import com.karengin.libproject.converter.AuthorConverter;
 import com.karengin.libproject.repository.AuthorRepository;
 import com.karengin.libproject.dto.AuthorDto;
 import com.karengin.libproject.repository.BookRepository;
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -14,53 +17,66 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@AllArgsConstructor
-public class AuthorService {
+public class AuthorService extends AbstractService<AuthorDto, AuthorEntity, AuthorRepository> {
 
-    private final AuthorRepository authorRepository;
-    private final AuthorConverter authorConverter;
-    private final BookRepository bookRepository;
+    @Autowired
+    private BookService bookService;
+
+    public AuthorService(AuthorRepository repository, AbstractConverter<AuthorDto, AuthorEntity> converter) {
+        super(repository, converter);
+    }
 
     public ResponseEntity<List<AuthorDto>> getAuthorsList() {
         return ResponseEntity.status(200).body(
-                authorRepository.findAll().stream().map(authorConverter::convertToDto)
+                getRepository().findAll().stream().map(getConverter()::convertToDto)
                         .collect(Collectors.toList()));
     }
 
-    public ResponseEntity<String> addAuthor(AuthorDto authorDto) {
-        if ( authorRepository.getByName(authorDto.getName()) == null) {
-            authorRepository.save(authorConverter.convertToEntity(authorDto));
+    @Override
+    public ResponseEntity<String> save(AuthorDto authorDto) {
+        if (getRepository().getByName(authorDto.getName()) == null) {
+            getRepository().save(getConverter().convertToEntity(authorDto));
             return ResponseEntity.status(201).body("Author was added");
         }
         return ResponseEntity.status(403).body("Author already exists");
     }
 
     public ResponseEntity<Long> getAuthorsCount() {
-        return ResponseEntity.status(200).body(authorRepository.count());
+        return ResponseEntity.status(200).body(getRepository().count());
     }
 
     /*author Stanislav Patskevich */
     public ResponseEntity<String> deleteAuthor(final long id) {
-        if (authorRepository.existsById(id)) {
-            AuthorEntity author = authorRepository.findById(id);
+        if (getRepository().existsById(id)) {
+            AuthorEntity author = getRepository().findById(id);
             List<BookEntity> listBook = author.getBooks();
             for (BookEntity book : listBook) {
-                book.setAuthor(authorRepository.findById(1));
-                bookRepository.save(book);
+                book.setAuthor(getRepository().findById(1));
+                bookService.getRepository().save(book);
             }
-            authorRepository.delete(author);
+            getRepository().delete(author);
             return ResponseEntity.status(200).body("Автор с ID № "+id+" был удалён");
         }
         return ResponseEntity.status(404).body("Автора с ID № "+id+" не существует");
     }
 
     public ResponseEntity<String> сhangeAuthor(final long id, final String new_name) {
-        if (authorRepository.existsById(id)) {
-            AuthorEntity author = authorRepository.findById(id);
+        if (getRepository().existsById(id)) {
+            AuthorEntity author = getRepository().findById(id);
             author.setName(new_name);
-            authorRepository.save(author);
+            getRepository().save(author);
             return ResponseEntity.status(200).body("Автор с ID № "+id+" был изменён");
         }
         return ResponseEntity.status(404).body("Автора с ID № "+id+" не существует");
+    }
+
+    @Override
+    protected boolean beforeSave(AuthorDto dto) {
+        return false;
+    }
+
+    @Override
+    public List<AuthorDto> findByFilterParameter(String filterParameter) {
+        return null;
     }
 }

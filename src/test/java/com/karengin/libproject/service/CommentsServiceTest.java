@@ -37,7 +37,7 @@ public class CommentsServiceTest {
 
     @Before
     public void setUp() {
-        commentsService = new CommentsService(commentsRepository, commentsConverter, bookRepository);
+        commentsService = new CommentsService(commentsRepository, commentsConverter);
     }
 
     @Test

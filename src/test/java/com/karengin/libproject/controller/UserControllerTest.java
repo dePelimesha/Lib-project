@@ -45,7 +45,7 @@ public class UserControllerTest {
     public void register() throws Exception {
         final UsersDto usersDto = MockData.usersDto();
 
-        Mockito.when(userService.register(usersDto)).
+        Mockito.when(userService.save(usersDto)).
                 thenReturn(ResponseEntity.status(201).body("Account was created"));
 
         mockMvc.perform(post("/register").with(csrf())

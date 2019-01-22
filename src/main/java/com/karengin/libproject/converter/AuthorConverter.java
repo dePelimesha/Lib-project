@@ -6,7 +6,7 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 @Service
-public class AuthorConverter implements DtoEntityConverter<AuthorDto, AuthorEntity> {
+public class AuthorConverter extends AbstractConverter<AuthorDto, AuthorEntity> {
 
     @Override
     public AuthorDto convertToDto(final AuthorEntity authorEntity) {

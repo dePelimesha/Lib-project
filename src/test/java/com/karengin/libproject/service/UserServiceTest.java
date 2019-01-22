@@ -38,12 +38,9 @@ public class UserServiceTest {
     @Mock
     private UsersRoleRepository usersRoleRepository;
 
-    @Mock
-    private PasswordEncoder passwordEncoder;
-
     @Before
     public void setUp() {
-        userService = new UserService(usersRepository,userConverter,usersRoleRepository,passwordEncoder);
+        userService = new UserService(usersRepository,userConverter);
     }
 
     @Test
@@ -57,7 +54,7 @@ public class UserServiceTest {
         Mockito.when(usersRoleRepository.findById(2)).thenReturn(usersRoleEntity);
         Mockito.when(usersRepository.save(usersEntity)).thenReturn(usersEntity);
 
-        final ResponseEntity<String> result = userService.register(usersDto);
+        final ResponseEntity<String> result = userService.save(usersDto);
 
         assertNotNull(result.getBody());
         assertEquals(result.getStatusCode(), HttpStatus.CREATED);
@@ -75,7 +72,7 @@ public class UserServiceTest {
 
         Mockito.doReturn(usersEntity).when(usersRepository).findByLogin(usersDto.getLogin());
 
-        final ResponseEntity<String> result = userService.register(usersDto);
+        final ResponseEntity<String> result = userService.save(usersDto);
 
         assertNotNull(result.getBody());
         assertEquals(result.getStatusCode(), HttpStatus.FORBIDDEN);

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-public class BookConverter implements DtoEntityConverter<BookDto, BookEntity> {
+public class BookConverter extends AbstractConverter<BookDto, BookEntity> {
     private final AuthorRepository authorRepository;
     private final GenreConverter genreConverter;
 

@@ -57,7 +57,7 @@ public class AdminControllerTest {
     public void addAuthor() throws Exception {
         final AuthorDto authorDto = MockData.authorDto();
 
-        Mockito.when(authorService.addAuthor(authorDto)).
+        Mockito.when(authorService.save(authorDto)).
                 thenReturn(ResponseEntity.status(201).body("Author was added"));
 
         mockMvc.perform(post("/admin/create_author").with(csrf())
@@ -74,7 +74,7 @@ public class AdminControllerTest {
         final BookDto bookDto = MockData.bookDto();
         ObjectMapper mapper = new ObjectMapper();
 
-        Mockito.when(bookService.createBook(bookDto)).
+        Mockito.when(bookService.save(bookDto)).
                 thenReturn(ResponseEntity.status(201).body("Book was added"));
 
         mockMvc.perform(post("/admin/create_book").with(csrf())

@@ -1,11 +1,12 @@
 package com.karengin.libproject.dto;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 
 @Data
+@EqualsAndHashCode(callSuper = true)
 @NoArgsConstructor
-public class GenreDto {
-    private long id;
+public class GenreDto extends AbstractDto {
     private String genre;
 }

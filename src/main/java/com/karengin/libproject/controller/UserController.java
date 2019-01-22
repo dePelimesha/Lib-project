@@ -24,7 +24,7 @@ public class UserController {
 
     @PostMapping("/register")
     public ResponseEntity<String> register(@RequestBody final UsersDto usersDto) {
-         return userService.register(usersDto);
+         return userService.save(usersDto);
     }
 
     @GetMapping("/logout")

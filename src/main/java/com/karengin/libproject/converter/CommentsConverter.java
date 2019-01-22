@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-public class CommentsConverter implements DtoEntityConverter<CommentsDto, CommentsEntity> {
+public class CommentsConverter extends AbstractConverter<CommentsDto, CommentsEntity> {
 
     private final UsersRepository usersRepository;
 

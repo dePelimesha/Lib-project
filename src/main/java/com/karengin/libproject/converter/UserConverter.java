@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @AllArgsConstructor
-public class UserConverter implements DtoEntityConverter<UsersDto, UsersEntity> {
+public class UserConverter extends AbstractConverter<UsersDto, UsersEntity> {
 
     private UsersRoleRepository usersRoleRepository;
 

@@ -1,6 +1,12 @@
 package com.karengin.libproject.UI.view;
 
+import com.karengin.libproject.UI.form.AuthorEditForm;
+import com.karengin.libproject.UI.window.AbstractEditWindow;
+import com.karengin.libproject.UI.window.EditAuthorWindow;
+import com.karengin.libproject.UI.window.EditBookWindow;
+import com.karengin.libproject.dto.AbstractDto;
 import com.karengin.libproject.dto.AuthorDto;
+import com.karengin.libproject.service.AbstractService;
 import com.karengin.libproject.service.AuthorService;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.spring.annotation.SpringView;
@@ -14,35 +20,21 @@ import static java.lang.Math.toIntExact;
 
 @SpringView(name = AuthorsView.NAME)
 @Component(AuthorsView.NAME)
-public class AuthorsView extends AbstractView<AuthorDto>{
+public class AuthorsView extends AbstractView<AuthorDto, AuthorService>{
 
     public static final String NAME = "authors";
 
-    @Autowired
-    private AuthorService authorService;
-
-    @PostConstruct
-    void init() {
-        grid = new Grid<>(AuthorDto.class);
-        selectionModel = (MultiSelectionModel<AuthorDto>) grid.setSelectionMode(Grid.SelectionMode.MULTI);
-        settingSelectionModel();
-        setEventListeners();
-        this.addComponent(headerLayout);
-        this.addComponent(grid);
-
-        dataProvider = DataProvider.fromFilteringCallbacks(
-                query -> {
-                    dtoList = authorService.getAuthorsList().getBody();
-                    return dtoList.stream();
-                },
-                query -> toIntExact(authorService.getAuthorsCount().getBody())
-        );
-
-        grid.setDataProvider(dataProvider);
+    public AuthorsView(final AuthorService service) {
+        super(service);
     }
 
     @Override
-    protected void setEventListeners() {
+    protected AbstractEditWindow<AuthorDto, AuthorService> getEditWindow(final AuthorDto dto, final AuthorService service) {
+        return new EditAuthorWindow(new AuthorEditForm(dto, service));
+    }
 
+    @Override
+    protected Class<AuthorDto> getDtoClass() {
+        return AuthorDto.class;
     }
 }

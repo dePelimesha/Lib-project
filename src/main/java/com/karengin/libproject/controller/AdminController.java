@@ -24,12 +24,12 @@ public class AdminController {
 
     @PostMapping("/create_author")
     public ResponseEntity<String> createAuthor(@RequestBody final AuthorDto authorDto) {
-        return authorService.addAuthor(authorDto);
+        return authorService.save(authorDto);
     }
 
     @PostMapping("/create_book")
     public ResponseEntity<String> createBook(@RequestBody final BookDto bookDto) {
-        return bookService.createBook(bookDto);
+        return bookService.save(bookDto);
     }
 
     @DeleteMapping("/delete_comment/{id}")
@@ -46,11 +46,6 @@ public class AdminController {
     @PostMapping("/change_author/{id}/{new_name}")
     public ResponseEntity<String> changeAuthor(@PathVariable("id") final long id, @PathVariable("id") final String new_name) {
         return authorService.сhangeAuthor(id, new_name);
-    }
-
-    @DeleteMapping("/delete_book/{id}")
-    public ResponseEntity<String> deleteBook(@PathVariable("id") final long id) {
-        return bookService.deleteBook(id);
     }
 
     @PostMapping("/change_book/{id}")

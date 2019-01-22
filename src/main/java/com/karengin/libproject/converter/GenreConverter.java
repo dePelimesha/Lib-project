@@ -11,7 +11,7 @@ import java.util.List;
 
 @Service
 @AllArgsConstructor
-public class GenreConverter implements DtoEntityConverter<GenreDto, GenreEntity> {
+public class GenreConverter extends AbstractConverter<GenreDto, GenreEntity> {
     private final GenreRepository genreRepository;
 
     @Override

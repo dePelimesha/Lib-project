@@ -42,7 +42,7 @@ public class AuthorServiceTest {
 
     @Before
     public void setUp() {
-        authorService = new AuthorService(authorRepository, authorConverter, bookRepository);
+        authorService = new AuthorService(authorRepository, authorConverter);
     }
 
     @Test
@@ -76,7 +76,7 @@ public class AuthorServiceTest {
         Mockito.when(authorConverter.convertToEntity(authorDto)).thenReturn(authorEntity);
         Mockito.when(authorRepository.save(authorEntity)).thenReturn(authorEntity);
 
-        ResponseEntity<String> result = authorService.addAuthor(authorDto);
+        ResponseEntity<String> result = authorService.save(authorDto);
 
         assertNotNull(result.getBody());
         assertEquals(result.getStatusCode(), HttpStatus.CREATED);
